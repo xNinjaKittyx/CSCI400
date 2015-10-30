@@ -263,8 +263,8 @@ int main()
 
 	srand(time(NULL));
 
-	int n = 400;
-	int m = 1000;
+	int n = 4000;
+	int m = 5;
 
 
 	vector<vector<int>> DBList;
@@ -294,7 +294,7 @@ int main()
 	clock_t temptime = clock();
 	for (int i = 0; i < DBList.size(); i++) {
 
-		leastCount = 2000000;
+		leastCount = 2147483646;
 
 		for (int j = 0; j < DBList.size(); j++) {
 			
