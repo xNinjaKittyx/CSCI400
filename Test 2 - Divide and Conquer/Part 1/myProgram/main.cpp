@@ -7,255 +7,63 @@
 
 
 #include <iostream>		//inclusion of support for doing input & output
-#include <iterator>     // std::ostream_iterator
 #include <vector>		//inclusion of support for doing input & output
 #include <algorithm>	//inclusion of support for doing input & output
 #include <ctime>
 #include <time.h>
-#include <fstream>
 using namespace std;	//declare access to standard stuff like cin, cout
 
 
-void preferenceTransform
-(int size, vector<int>::iterator itr1, vector<int>::iterator itr2)
-{
 
-	if (size <= 1) //If  the size is 1 or less, it is already sorted just return true.
-		return;
+vector<int> findK(vector<int> A) {
+	// First we need to split the vector into two parts.
+	vector<int> B;
+	vector<int> C;
 
-	if (size == 2) //If size is 2, sort the two elements, and then return true.
-	{
-		if (*itr1 > *(itr1 + 1))
-		{
-			int temp;
+	// Now we need to know how much to put in each vector.
+	int bsize = A.size() / 2;
+	int csize = A.size() - bsize;
 
-			temp = *itr1;
-			*itr1 = *(itr1 + 1);
-			*(itr1 + 1) = temp;
+	// Now resize the vectors.
+	B.resize(bsize);
+	C.resize(csize);
 
-			temp = *itr2;
-			*itr2 = *(itr2 + 1);
-			*(itr2 + 1) = temp;
-			return;
-
-		}
-
-		return;
+	// Now we need to put all the values of A into these two vectors.
+	for (int i = 0; i < bsize; i++) { // Reasons for using the csize/bsize, is to reduce number of vector calls.
+		B[i] = A[i];
+		
+	}
+	for (int i = 0; i < csize; i++) {
+		C[i] = A[bsize + i];
 	}
 
+	// Now we need to check the first two numbers of the second vector.
 
-	int sizeA = size / 2;			// Size of the first half  ==> A
-	int sizeB = size - sizeA;	// Size of the second half ==> B
+	// if C[0] > C[1], that means K exists in the second half.
 
-	preferenceTransform(sizeA, itr1, itr2);
-	preferenceTransform(sizeB, itr1 + sizeA, itr2 + sizeA);
+	// To save K, we need to save the vectors.
+	vector<int> results;
+	if (C[0] > C[1]) {
+		results = findK(C);
+	}
+		
+	// if C[0] < C[1], that means K MIGHT exist in the first half. (It can be C[0] that is k)
+	// so if the 2nd condition is true, we must check the last object of B.
+	// if B[last] > C[0], then C[0] is k.
+	// if B[last] < C[0], then we can conclude that K is in the first half.
 
-	vector<int> buffer1, buffer2;
-	buffer1.resize(size);
-	buffer2.resize(size);
-
-	int countA = 0, countB = 0, countC = 0; // Count variables
-	while (countA<sizeA && countB<sizeB)
-	{
-		if (*(itr1 + countA) < *(itr1 + sizeA + countB))
-			// If the current element in first half, i.e. A, is smaller, 
-			// it becomes the next value to go into the buffer.
-		{
-			buffer1[countC] = *(itr1 + countA);
-			buffer2[countC] = *(itr2 + countA);
-
-			countC++;
-			countA++;
-
+	else if (C[0] < C[1]) {
+		if (B[bsize - 1] > C[0]) {
+			return { C[0] };
 		}
-		else
-			// If the current element in the second half, i.e. B, is smaller, 
-			// it becomes the next value to go into the buffer.
-		{
-			buffer1[countC] = *(itr1 + sizeA + countB);
-			buffer2[countC] = *(itr2 + sizeA + countB);
-
-			countC++;
-			countB++;
-
+		else if (B[bsize - 1] < C[0]) {
+			results = findK(B);
 		}
 	}
-
-	while (countA<sizeA)	// If vecB is all used up, place rest of vecA in vec C
-	{
-		buffer1[countC] = *(itr1 + countA);
-		buffer2[countC] = *(itr2 + countA);
-
-		countC++;
-		countA++;
-	}
-	while (countB<sizeB)	// If vecA is all used up, place rest of vecB in vec C
-	{
-		buffer1[countC] = *(itr1 + sizeA + countB);
-		buffer2[countC] = *(itr2 + sizeA + countB);
-
-		countC++;
-		countB++;
-	}
-
-	for (int i = 0; i< size; i++)
-	{
-		*(itr1 + i) = buffer1[i];
-		*(itr2 + i) = buffer2[i];
-	}
+	
+	return results;
 }
 
-void preferenceTransform(vector<int>  pref1, vector<int>  pref2, vector<int>& transformed)
-{
-	if (pref1.size() != pref2.size())
-		return;
-	int size = pref1.size();
-
-	preferenceTransform(size, pref1.begin(), pref2.begin());
-	transformed.resize(size);
-	for (int i = 0; i< size; i++)
-	{
-		//cout << pref1[i] << " , " << pref2[i] << endl;
-		transformed[i] = pref2[i];
-	}
-}
-
-
-//*************************************************************************
-
-//
-// Merge two sorted vectors function
-//
-int mergeTwoSortedVectors(vector<int> & vecA, vector<int> & vecB, vector<int> & vecC)
-{
-
-	//	Preconditions: (checking if the vectors are in ascending order)
-
-	int size1 = vecA.size(), size2 = vecB.size();
-
-	//for(int i=0; i<(size1-1); i++)	// Checking Vector A is in order
-	//{
-	//		if(vecA[i]>vecA[i+1])
-	//		{	cout << "ERROR: The first vector is not in ascending order.\n";
-	//			return;
-	//		}
-	//}
-	//
-	//for(int i=0; i<(size2-1); i++)// Checking Vector B is in order
-	//{
-	//		if(vecB[i]>vecB[i+1])
-	//		{
-	//			cout << "ERROR: The second vector is not in ascending order.\n";
-	//			return;
-	//		}
-	//}
-
-	//
-	// Placing elements in vecC
-	int countA = 0, countB = 0, countC = 0; // Count variables
-
-	int countInversions = 0;
-
-	while (countA<size1 && countB<size2)
-	{
-		if (vecA[countA]<vecB[countB])	// If the vecA element is smaller, it becomes the next vecC element
-		{
-			vecC[countC] = vecA[countA];
-			countC++;
-			countA++;
-		}
-		else	// If the vecB element is smaller, it becomes the next vecC element
-		{
-			vecC[countC] = vecB[countB];
-			countC++;
-			countB++;
-
-			countInversions += (size1 - countA);
-		}
-	}
-
-	while (countA<size1)	// If vecB is all used up, place rest of vecA in vec C
-	{
-		vecC[countC] = vecA[countA];
-		countC++;
-		countA++;
-	}
-	while (countB<size2)	// If vecA is all used up, place rest of vecB in vec C
-	{
-		vecC[countC] = vecB[countB];
-		countC++;
-		countB++;
-	}
-
-	return countInversions;
-
-}
-
-
-int mergeSort(vector<int> & vecToSort)
-{
-	int numOfInversions = 0;
-	int temp; // Initialize temporary variables
-	vector<int> vec1, vec2, vec3;
-
-	// First: check if vectors are already sorted
-	if (vecToSort.size() <= 1) //If  the size of  vecToSort is 1 or less, it is already sorted just return true.
-		return 0;
-
-	if (vecToSort.size() == 2) //If size of  vecToSort  is 2, sort the two elements, and then return true.
-	{
-		if (vecToSort[0]>vecToSort[1])
-		{
-			temp = vecToSort[1];
-			vecToSort[1] = vecToSort[0];
-			vecToSort[0] = temp;
-			return 1;
-		}
-		return 0;
-	}
-
-	int size1 = vecToSort.size() / 2;	// Initialize size of new vectors
-	int size2 = vecToSort.size() - size1;
-
-	vec1.resize(size1);	// Resizing the temporary vectors
-	vec2.resize(size2);
-
-	for (int i = 0; i<size1; i++)	// Placing variables in two new vectors
-		vec1[i] = vecToSort[i];
-	for (int i = 0; i<size2; i++)
-		vec2[i] = vecToSort[i + size1];
-
-
-	numOfInversions += mergeSort(vec1); //Call mergeSort(vec1)  to sort the first vector.
-	numOfInversions += mergeSort(vec2); //Call mergeSort(vec2) to sort the second vector.
-
-	numOfInversions += mergeTwoSortedVectors(vec1, vec2, vecToSort); // Merge the two sorted vectors
-
-	return numOfInversions;
-}
-
-int inversionCount(vector<int> &list1, vector<int> &list2) {
-
-	int count = 0;
-	vector<int> transformedList;
-	transformedList.resize(list1.size());
-	preferenceTransform(list1, list2, transformedList);
-
-	count = mergeSort(transformedList);
-
-	return count;
-
-}
-
-void generatePreferenceList(int n, vector<int> &list) {
-	list.resize(n);
-	for (int i = 0; i < list.size(); i++) {
-		list[i] = i + 1;
-	}
-
-	random_shuffle(list.begin(), list.end());
-}
-// Beginning of main function
 
 int main()
 
@@ -263,75 +71,45 @@ int main()
 
 	srand(time(NULL));
 
-	int n = 4000;
-	int m = 5;
 
+	// Given an Array A of elements n, there is an unknown unique k value in the middle.
+	// This k value is the minimum value. Everything to the left and right is greater than k in sorted order.
+	// For example: 59 43 39 28 17 49 78.
+	// k value is 17.
 
-	vector<vector<int>> DBList;
+	// First we will create an Array A of elements n.
+	cout << "How many elements?\n";
+	int elements;
+	cin >> elements;
 
+	vector<int> A;
+	cout << "A[i] > A[i+1] BEFORE the value k\n";
+	cout << "A[i] < A[i+1] AFTER the value k\n";
+	for (int i = 0; i < elements; i++) {
+		cout << "A[" << i << "]: ";
+		int asdf;
+		cin >> asdf;
+		A.push_back(asdf);
+	}
 
 	clock_t timer;
-
-	
-
-	int leastCount = 2000000;
-	int count;
-	int pair;
-	DBList.resize(m);
-	for (int i = 0; i < DBList.size(); i++) {
-		generatePreferenceList(n, DBList[i]);
-	}
-
-	cout << DBList.size() << endl;
-	cout << DBList[0].size() << endl;
-
-	cout << "Generated DB List" << endl;
-
-	ofstream myfile;
-	myfile.open("output.txt");
-
 	timer = clock();
 	clock_t temptime = clock();
-	for (int i = 0; i < DBList.size(); i++) {
+	
 
-		leastCount = 2147483646;
+	// So we need a function that recursively calls itself.
 
-		for (int j = 0; j < DBList.size(); j++) {
-			
-			
-			count = inversionCount(DBList[i], DBList[j]);
-			if ((count < leastCount) && (i != j)) {
-				leastCount = count;
-				pair = j;
-			}
+	vector<int> results = findK(A);
+
+	cout << "K is " << results[0] << endl;
+	cout << "Vector size should be 1 and it is... " << results.size() << endl;
 
 
-		}
-		cout << "The Most Similar Person To Member #" << i << " Is Member #" << pair << endl;
-		cout << "THe Number of Inversions is: " << leastCount << endl;
 
-		/*cout << "Person # " << i << " is the following" << endl;
-		cout << "{ ";
-		for (int k = 0; k < DBList[i].size(); k++) {
-			cout << DBList[i][k] << " ";
-			
-		}
-		cout << " }" << endl;
 
-		cout << "Person # " << pair << " is the following" << endl;
-		cout << "{ ";
-		for (int k = 0; k < DBList[pair].size(); k++) {
-			cout << DBList[pair][k] << " ";
 
-		}
-		cout << " }" << endl;*/
 
-		clock_t now = clock() - temptime;
-		temptime = clock();
-		cout << "This took " << (((float)now) / CLOCKS_PER_SEC) << " seconds" << endl;
-	}
 
-	myfile.close();
 	timer = clock() - timer;
 
 	cout << "This took " << (((float)timer) / CLOCKS_PER_SEC) << " seconds" << endl;
