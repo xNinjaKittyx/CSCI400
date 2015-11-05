@@ -7,255 +7,134 @@
 
 
 #include <iostream>		//inclusion of support for doing input & output
-#include <iterator>     // std::ostream_iterator
 #include <vector>		//inclusion of support for doing input & output
-#include <algorithm>	//inclusion of support for doing input & output
 #include <ctime>
 #include <time.h>
-#include <fstream>
 using namespace std;	//declare access to standard stuff like cin, cout
 
 
-void preferenceTransform
-(int size, vector<int>::iterator itr1, vector<int>::iterator itr2)
-{
+vector<int> findMaxAndMin(vector<int> A) {
+	// Alright, so first we gotta make sure to return if the vector is only 1 or 2 size.
+	int size = A.size(); // so we don't have to call this every time.
+	if (size == 1) {
+		return A;
+	}
+	else if (size == 2) {
+		// To make it easier, let us make A[0] the lower value and A[1] the higher value. Kinda like merge sort.
+		if (A[0] > A[1]) {
+			int temp = A[0];
+			A[0] = A[1];
+			A[1] = temp;
+		}
+		return A;
+	}
+	else {
+		// First we need to split the vector into two parts.
+		vector<int> B;
+		vector<int> C;
 
-	if (size <= 1) //If  the size is 1 or less, it is already sorted just return true.
-		return;
+		// Now we need to know how much to put in each vector.
+		int bsize = size / 2;
+		int csize = size - bsize;
 
-	if (size == 2) //If size is 2, sort the two elements, and then return true.
-	{
-		if (*itr1 > *(itr1 + 1))
-		{
-			int temp;
+		// Now resize the vectors.
+		B.resize(bsize);
+		C.resize(csize);
 
-			temp = *itr1;
-			*itr1 = *(itr1 + 1);
-			*(itr1 + 1) = temp;
-
-			temp = *itr2;
-			*itr2 = *(itr2 + 1);
-			*(itr2 + 1) = temp;
-			return;
+		// Now we need to put all the values of A into these two vectors.
+		for (int i = 0; i < bsize; i++) { // Reasons for using the csize/bsize, is to reduce number of vector calls.
+			B[i] = A[i];
 
 		}
+		for (int i = 0; i < csize; i++) {
+			C[i] = A[bsize + i];
+		}
 
-		return;
-	}
+		// Alright, so usually here we will have two vectors. We will call recursively on these two vectors.
+		// Then we grab the results and compare, We should ONLY RETURN SIZE 1 OR 2 VECTORS
 
+		vector<int> left = findMaxAndMin(B);
+		vector<int> right = findMaxAndMin(C);
+		// We now have the Max and Min of both sides.
+		// Compare these two vectors.
 
-	int sizeA = size / 2;			// Size of the first half  ==> A
-	int sizeB = size - sizeA;	// Size of the second half ==> B
+		// We will always have either vectors that have 2, or one of them will have 1.
+			
+		if ((left.size() + right.size()) == 4) {
+			// In the case we have a 2 and 2 vectors, let's find the smaller number, push it
 
-	preferenceTransform(sizeA, itr1, itr2);
-	preferenceTransform(sizeB, itr1 + sizeA, itr2 + sizeA);
+			vector<int> results;
 
-	vector<int> buffer1, buffer2;
-	buffer1.resize(size);
-	buffer2.resize(size);
+			if (left[0] < right[0]) {
+				results.push_back(left[0]);
+			}
+			else {
+				results.push_back(right[0]);
+			}
 
-	int countA = 0, countB = 0, countC = 0; // Count variables
-	while (countA<sizeA && countB<sizeB)
-	{
-		if (*(itr1 + countA) < *(itr1 + sizeA + countB))
-			// If the current element in first half, i.e. A, is smaller, 
-			// it becomes the next value to go into the buffer.
-		{
-			buffer1[countC] = *(itr1 + countA);
-			buffer2[countC] = *(itr2 + countA);
+			// Let's find the larger number, and push it.
 
-			countC++;
-			countA++;
+			if (left[1] > right[1]) {
+				results.push_back(left[1]);
+			}
+			else {
+				results.push_back(right[1]);
+			}
+			
+			// We have found the max/min of these two vectors, Return
+			return results;
 
 		}
-		else
-			// If the current element in the second half, i.e. B, is smaller, 
-			// it becomes the next value to go into the buffer.
-		{
-			buffer1[countC] = *(itr1 + sizeA + countB);
-			buffer2[countC] = *(itr2 + sizeA + countB);
+		else if ((left.size() + right.size()) == 3) {
+			// This means one of these vectors got the vector with size 1.
+			// Let's find which one it is.
+			if (left.size() == 1) {
 
-			countC++;
-			countB++;
+				// Left side is one. Now we check if this number is a local min/max
+				if (left[0] < right[0]) {
 
+					// if left actually useful for the minimum.
+					right[0] = left[0];
+				}
+				// if left side is useful for maximum.
+				if (left[0] > right[1]) {
+
+					right[1] = left[0];
+				}
+
+				// We are done here. Return the right vector.
+				return right;
+			}
+
+			// Do the same thing for the right side if the right side vector is SIZE 1
+
+			if (right.size() == 1) {
+
+				// right side is one. Now we check if this number is a local min/max
+				if (right[0] < left[0]) {
+
+					// if right actually useful for the minimum.
+					left[0] = right[0];
+				}
+				// if right side is useful for maximum.
+				if (right[0] > left[1]) {
+
+					left[1] = right[0];
+				}
+
+				// We are done here. Return the left vector.
+				return left;
+			}
 		}
-	}
 
-	while (countA<sizeA)	// If vecB is all used up, place rest of vecA in vec C
-	{
-		buffer1[countC] = *(itr1 + countA);
-		buffer2[countC] = *(itr2 + countA);
 
-		countC++;
-		countA++;
-	}
-	while (countB<sizeB)	// If vecA is all used up, place rest of vecB in vec C
-	{
-		buffer1[countC] = *(itr1 + sizeA + countB);
-		buffer2[countC] = *(itr2 + sizeA + countB);
 
-		countC++;
-		countB++;
-	}
 
-	for (int i = 0; i< size; i++)
-	{
-		*(itr1 + i) = buffer1[i];
-		*(itr2 + i) = buffer2[i];
+	
+
 	}
 }
 
-void preferenceTransform(vector<int>  pref1, vector<int>  pref2, vector<int>& transformed)
-{
-	if (pref1.size() != pref2.size())
-		return;
-	int size = pref1.size();
-
-	preferenceTransform(size, pref1.begin(), pref2.begin());
-	transformed.resize(size);
-	for (int i = 0; i< size; i++)
-	{
-		//cout << pref1[i] << " , " << pref2[i] << endl;
-		transformed[i] = pref2[i];
-	}
-}
-
-
-//*************************************************************************
-
-//
-// Merge two sorted vectors function
-//
-int mergeTwoSortedVectors(vector<int> & vecA, vector<int> & vecB, vector<int> & vecC)
-{
-
-	//	Preconditions: (checking if the vectors are in ascending order)
-
-	int size1 = vecA.size(), size2 = vecB.size();
-
-	//for(int i=0; i<(size1-1); i++)	// Checking Vector A is in order
-	//{
-	//		if(vecA[i]>vecA[i+1])
-	//		{	cout << "ERROR: The first vector is not in ascending order.\n";
-	//			return;
-	//		}
-	//}
-	//
-	//for(int i=0; i<(size2-1); i++)// Checking Vector B is in order
-	//{
-	//		if(vecB[i]>vecB[i+1])
-	//		{
-	//			cout << "ERROR: The second vector is not in ascending order.\n";
-	//			return;
-	//		}
-	//}
-
-	//
-	// Placing elements in vecC
-	int countA = 0, countB = 0, countC = 0; // Count variables
-
-	int countInversions = 0;
-
-	while (countA<size1 && countB<size2)
-	{
-		if (vecA[countA]<vecB[countB])	// If the vecA element is smaller, it becomes the next vecC element
-		{
-			vecC[countC] = vecA[countA];
-			countC++;
-			countA++;
-		}
-		else	// If the vecB element is smaller, it becomes the next vecC element
-		{
-			vecC[countC] = vecB[countB];
-			countC++;
-			countB++;
-
-			countInversions += (size1 - countA);
-		}
-	}
-
-	while (countA<size1)	// If vecB is all used up, place rest of vecA in vec C
-	{
-		vecC[countC] = vecA[countA];
-		countC++;
-		countA++;
-	}
-	while (countB<size2)	// If vecA is all used up, place rest of vecB in vec C
-	{
-		vecC[countC] = vecB[countB];
-		countC++;
-		countB++;
-	}
-
-	return countInversions;
-
-}
-
-
-int mergeSort(vector<int> & vecToSort)
-{
-	int numOfInversions = 0;
-	int temp; // Initialize temporary variables
-	vector<int> vec1, vec2, vec3;
-
-	// First: check if vectors are already sorted
-	if (vecToSort.size() <= 1) //If  the size of  vecToSort is 1 or less, it is already sorted just return true.
-		return 0;
-
-	if (vecToSort.size() == 2) //If size of  vecToSort  is 2, sort the two elements, and then return true.
-	{
-		if (vecToSort[0]>vecToSort[1])
-		{
-			temp = vecToSort[1];
-			vecToSort[1] = vecToSort[0];
-			vecToSort[0] = temp;
-			return 1;
-		}
-		return 0;
-	}
-
-	int size1 = vecToSort.size() / 2;	// Initialize size of new vectors
-	int size2 = vecToSort.size() - size1;
-
-	vec1.resize(size1);	// Resizing the temporary vectors
-	vec2.resize(size2);
-
-	for (int i = 0; i<size1; i++)	// Placing variables in two new vectors
-		vec1[i] = vecToSort[i];
-	for (int i = 0; i<size2; i++)
-		vec2[i] = vecToSort[i + size1];
-
-
-	numOfInversions += mergeSort(vec1); //Call mergeSort(vec1)  to sort the first vector.
-	numOfInversions += mergeSort(vec2); //Call mergeSort(vec2) to sort the second vector.
-
-	numOfInversions += mergeTwoSortedVectors(vec1, vec2, vecToSort); // Merge the two sorted vectors
-
-	return numOfInversions;
-}
-
-int inversionCount(vector<int> &list1, vector<int> &list2) {
-
-	int count = 0;
-	vector<int> transformedList;
-	transformedList.resize(list1.size());
-	preferenceTransform(list1, list2, transformedList);
-
-	count = mergeSort(transformedList);
-
-	return count;
-
-}
-
-void generatePreferenceList(int n, vector<int> &list) {
-	list.resize(n);
-	for (int i = 0; i < list.size(); i++) {
-		list[i] = i + 1;
-	}
-
-	random_shuffle(list.begin(), list.end());
-}
-// Beginning of main function
 
 int main()
 
@@ -263,75 +142,40 @@ int main()
 
 	srand(time(NULL));
 
-	int n = 4000;
-	int m = 5;
 
+	// First we will create an Array A of elements n.
+	cout << "How many elements?\n";
+	int elements;
+	cin >> elements;
 
-	vector<vector<int>> DBList;
+	vector<int> A;
+	for (int i = 0; i < elements; i++) {
+		cout << "A[" << i << "]: ";
+		int asdf;
+		cin >> asdf;
+		A.push_back(asdf);
+	}
 
 
 	clock_t timer;
-
-	
-
-	int leastCount = 2000000;
-	int count;
-	int pair;
-	DBList.resize(m);
-	for (int i = 0; i < DBList.size(); i++) {
-		generatePreferenceList(n, DBList[i]);
-	}
-
-	cout << DBList.size() << endl;
-	cout << DBList[0].size() << endl;
-
-	cout << "Generated DB List" << endl;
-
-	ofstream myfile;
-	myfile.open("output.txt");
-
 	timer = clock();
-	clock_t temptime = clock();
-	for (int i = 0; i < DBList.size(); i++) {
 
-		leastCount = 2147483646;
+	// So in this algorithm, we will split until there are pairs, then compare them.
+	// Then compare the results of the pairs.
+	// Instead of calling 2 different programs finding max and min, we will find them at the same time.
+	// We will pass a 2 integer vector
+	
+	vector<int> results; 
 
-		for (int j = 0; j < DBList.size(); j++) {
-			
-			
-			count = inversionCount(DBList[i], DBList[j]);
-			if ((count < leastCount) && (i != j)) {
-				leastCount = count;
-				pair = j;
-			}
+	results = findMaxAndMin(A);
 
 
-		}
-		cout << "The Most Similar Person To Member #" << i << " Is Member #" << pair << endl;
-		cout << "THe Number of Inversions is: " << leastCount << endl;
+	cout << "The Maximum Is: " << results[1] << endl;
+	cout << "The Minimum Is: " << results[0] << endl;
+	cout << "Therefore The Largest Gap Is: " << results[1] - results[0] << endl;
 
-		/*cout << "Person # " << i << " is the following" << endl;
-		cout << "{ ";
-		for (int k = 0; k < DBList[i].size(); k++) {
-			cout << DBList[i][k] << " ";
-			
-		}
-		cout << " }" << endl;
 
-		cout << "Person # " << pair << " is the following" << endl;
-		cout << "{ ";
-		for (int k = 0; k < DBList[pair].size(); k++) {
-			cout << DBList[pair][k] << " ";
 
-		}
-		cout << " }" << endl;*/
-
-		clock_t now = clock() - temptime;
-		temptime = clock();
-		cout << "This took " << (((float)now) / CLOCKS_PER_SEC) << " seconds" << endl;
-	}
-
-	myfile.close();
 	timer = clock() - timer;
 
 	cout << "This took " << (((float)timer) / CLOCKS_PER_SEC) << " seconds" << endl;
