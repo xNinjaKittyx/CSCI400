@@ -10,4 +10,5 @@
 8	0	2	5	7	9	12	14	14	15	18	20	21	
 9	0	2	5	7	9	12	14	14	15	18	20	21	
 10	0	2	5	7	9	12	14	14	15	18	20	21	
-This took 0 seconds
+Here is the list of items picked
+6	4	3	2	This took 0 seconds

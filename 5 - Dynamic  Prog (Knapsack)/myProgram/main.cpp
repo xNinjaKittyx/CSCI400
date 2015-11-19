@@ -30,9 +30,22 @@ int main()
 	Capacity of Knapsack : C
 	Maximum value from i to w : m[i, w]
 	*/
+	//vector<int> v = {6, 7, 5, 7, 8, 2, 11, 9, 13, 11};
+	//vector<int> w = {4, 5, 2, 3, 6, 1, 10, 7, 8, 9};
 
-	vector<int> v = {6, 7, 5, 7, 8, 2, 11, 9, 13, 11, 9, 10, 8, 9, 12, 5, 14, 11, 16, 13, 14, 16, 11, 15, 17, 5, 25, 21, 26, 25};
-	vector<int> w = {4, 5, 2, 3, 6, 1, 10, 7, 8, 9, 5, 6, 3, 4, 7, 2, 11, 8, 9, 10, 5, 7, 3, 4, 9, 4, 17, 14, 13, 15};
+	//vector<int> v = {6, 7, 5, 7, 8, 2, 11, 9, 13, 11, 9, 10, 8, 9, 12, 5, 14, 11, 16, 13, 14, 16, 11, 15, 17, 5, 25, 21, 26, 25};
+	//vector<int> w = {4, 5, 2, 3, 6, 1, 10, 7, 8, 9, 5, 6, 3, 4, 7, 2, 11, 8, 9, 10, 5, 7, 3, 4, 9, 4, 17, 14, 13, 15};
+
+
+	//vector<int> v = { 18, 11, 5, 19, 15, 6, 28, 12, 3, 7, 25, 4, 23, 27, 6, 7, 19, 23, 20, 25, 22, 4, 15, 2, 29, 15, 28, 20, 22, 29 };
+	//vector<int> w = { 12, 5, 30, 19, 23, 6, 2, 2, 26, 28, 22, 3, 23, 22, 9, 18, 12, 10, 18, 26, 24, 3, 4, 22, 24, 18, 23, 28, 24, 20 };
+
+	vector<int> v = { 18, 11, 5, 19, 15, 6, 28, 12, 3, 7, 25, 4, 23, 27, 6, 7, 19, 23, 20, 25, 22, 4, 15, 2, 29 };
+	vector<int> w = { 12, 5, 30, 19, 23, 6, 2, 2, 26, 28, 22, 3, 23, 22, 9, 18, 12, 10, 18, 26, 24, 3, 4, 22, 24 };
+
+	int C = 300; // Edit this!
+
+
 	if (v.size() != w.size()) {
 		cout << "v and w vectors size are not the same!" << endl;
 		char c;
@@ -40,7 +53,6 @@ int main()
 		return -1;
 	}
 	int n = v.size();
-	int C = 100; // Edit this!
 	vector<vector<int>> m(n + 1, vector<int> (C + 1, 0)); // m[i][j] i is number of items, and j is the weight capacity.
 
 	vector<vector<int>> p(n + 1, vector<int> (C + 1, 0)); // Will store all answer files
@@ -110,7 +122,7 @@ int main()
 	// Check every item and see if it was chosen or not
 	while (n > 0) {
 		if (p[n][C] == 1) {
-			fout << n - 1 << "\t";
+			fout << n << "\t";
 			n--;
 			C -= w[n];
 		}
@@ -122,7 +134,7 @@ int main()
 	fout.close();
 
 
-
+	cout << "All results have been saved to output.txt." << endl;
 	cout << endl << "Please enter any charcter and a return to quit the program." << endl;
 
 
