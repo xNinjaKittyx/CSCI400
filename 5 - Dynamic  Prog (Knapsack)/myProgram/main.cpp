@@ -83,8 +83,10 @@ int main()
 			if (w[i-1] <= j) {
 
 				// If it is, max (Value w/o new item, m[Without the item and removing the amount of space] and add the value of the new item.
-				m[i][j] = max(m[i - 1][j], m[i - 1][j - w[i-1]] + v[i-1]);
-				if (v[i - 1] + m[i - 1][j - w[i - 1]] > m[i - 1][j])
+				m[i][j] = max(m[i - 1][j], m[i - 1][j - w[i - 1]] + v[i - 1]);
+
+				// If I'm using the new integer, mark it as 1. If not, mark it as -1
+				if (m[i][j] == m[i - 1][j - w[i - 1]] + v[i - 1])
 					p[i][j] = 1;
 				else
 					p[i][j] = -1;
@@ -92,6 +94,7 @@ int main()
 			}
 			else {
 				// Otherwise it's just the same as the previous item.
+				// Mark as -1 since it is not using that variable.	
 				p[i][j] = -1;
 				m[i][j] = m[i - 1][j];
 			}
