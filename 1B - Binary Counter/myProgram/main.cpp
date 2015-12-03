@@ -9,7 +9,7 @@ using namespace std;	//declare access to standard stuff like cin, cout
 
 
 // Beginning of main function
-int main()               
+int main()               d
 {
 	double myRandom;
 	int i,j;
