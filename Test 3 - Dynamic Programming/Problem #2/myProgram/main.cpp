@@ -70,34 +70,57 @@ int main()
 		if (i > 4) {
 			totalStampsC = listOfCosts[0][i - 5] + listOfCosts[1][i - 5] + listOfCosts[2][i - 5];
 		}
-
-		if (totalStampsA < totalStampsB) {
-			if (totalStampsA < totalStampsC) {
-				// if totalStampsA is the least amount of stamps
+		if (i < 4) { // When B or C does not apply.
+			listOfCosts[0][i] = listOfCosts[0][i - 1] + 1;
+			listOfCosts[1][i] = listOfCosts[1][i - 1];
+			listOfCosts[2][i] = listOfCosts[2][i - 1];
+		}
+		else if (i < 5) {
+			// When only C Does not Apply.
+			if (totalStampsA < totalStampsB) {
 				listOfCosts[0][i] = listOfCosts[0][i - 1] + 1;
 				listOfCosts[1][i] = listOfCosts[1][i - 1];
 				listOfCosts[2][i] = listOfCosts[2][i - 1];
 			}
 			else {
-				// if totalStampsC is the least amount of stamps
-				listOfCosts[0][i] = listOfCosts[0][i - 5];
-				listOfCosts[1][i] = listOfCosts[1][i - 5];
-				listOfCosts[2][i] = listOfCosts[2][i - 5] + 1;
-			}
-		}
-		else {
-			if (totalStampsB < totalStampsC) {
-				// if totalStampsB is the least amount of stamps
 				listOfCosts[0][i] = listOfCosts[0][i - 4];
 				listOfCosts[1][i] = listOfCosts[1][i - 4] + 1;
 				listOfCosts[2][i] = listOfCosts[2][i - 4];
 			}
-			else {
-				// if totalStampsC is the least amount of stamps
-				listOfCosts[0][i] = listOfCosts[0][i - 5];
-				listOfCosts[1][i] = listOfCosts[1][i - 5];
-				listOfCosts[2][i] = listOfCosts[2][i - 5] + 1;
+		}
+		else {
+			// When All A,B,C Do Apply
+			if (totalStampsA < totalStampsB) {
+				if (totalStampsA < totalStampsC) {
+					// if totalStampsA is the least amount of stamps
+					listOfCosts[0][i] = listOfCosts[0][i - 1] + 1;
+					listOfCosts[1][i] = listOfCosts[1][i - 1];
+					listOfCosts[2][i] = listOfCosts[2][i - 1];
+				}
+				else {
+					// if totalStampsC is the least amount of stamps
+					listOfCosts[0][i] = listOfCosts[0][i - 5];
+					listOfCosts[1][i] = listOfCosts[1][i - 5];
+					listOfCosts[2][i] = listOfCosts[2][i - 5] + 1;
+				}
+
 			}
+			else {
+				if (totalStampsB < totalStampsC) {
+					// if totalStampsB is the least amount of stamps
+					listOfCosts[0][i] = listOfCosts[0][i - 4];
+					listOfCosts[1][i] = listOfCosts[1][i - 4] + 1;
+					listOfCosts[2][i] = listOfCosts[2][i - 4];
+				}
+				else {
+					// if totalStampsC is the least amount of stamps
+					listOfCosts[0][i] = listOfCosts[0][i - 5];
+					listOfCosts[1][i] = listOfCosts[1][i - 5];
+					listOfCosts[2][i] = listOfCosts[2][i - 5] + 1;
+
+				}
+			}
+
 		}
 	}
 	
@@ -106,17 +129,29 @@ int main()
 	ifstream fin;
 	ofstream fout;
 	fout.open("output.txt");
-	fout << "\tCosts\t1Cent\t4Cent\t5Cent" << endl;
+	fout << "Costs\t1Cent\t4Cent\t5Cent" << endl;
 	for (int i = 0; i <= cost; i++) {
-		fout << "\t" << i << "\t" << listOfCosts[0][i] << "\t" << listOfCosts[1][i] << "\t" << listOfCosts[2][i] << endl;
+		fout << "\t" << i << "\t\t" << listOfCosts[0][i] << "\t\t" << listOfCosts[1][i] << "\t\t" << listOfCosts[2][i] << endl;
 	}
 
 
 	fout << "This took " << (((float)timer) / CLOCKS_PER_SEC) << " seconds" << endl;
 	fout.close();
 
+	int x = listOfCosts[0][cost];
+	int y = listOfCosts[1][cost];
+	int z = listOfCosts[2][cost];
 
-	cout << "All results have been saved to output.txt." << endl;
+	cout << "You will need..." << endl;
+	cout << "1 Cent Stamps : " << x << endl;
+	cout << "4 Cent Stamps : " << y << endl;
+	cout << "5 Cent Stamps : " << z << endl;
+	cout << endl;
+	cout << "This is a total of " << x + y + z << " stamps." << endl;
+	cout << "With a postage total of " << x + (y * 4) + (z * 5) << " cents." << endl;
+
+
+	cout << "You can view the chart for dynamic programming in output.txt" << endl;
 	cout << endl << "Please enter any charcter and a return to quit the program." << endl;
 
 
