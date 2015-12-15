@@ -28,8 +28,8 @@ int main()
 	BigNaturalNumber x;
 	BigNaturalNumber y;
 
-	x.random(10000);
-	y.random(10000);
+	x.random(3);
+	y.random(3);
 	BigNaturalNumber z;
 
 	//Where Timer Starts
@@ -40,11 +40,13 @@ int main()
 	// Where Timer Ends
 	timer = clock() - timer;
 
-	for (int i = x.number.size() - 1; i >= 0; i--) {
+	cout << "First Number" << endl;
+	for (int i = 0; i < x.number.size(); i++) {
 		cout << x.number[i];
 	}
 	cout << endl;
-	for (int i = y.number.size() - 1; i >= 0; i--) {
+	cout << "Second Number" << endl;
+	for (int i = 0; i < y.number.size(); i++) {
 		cout << y.number[i];
 	}
 	cout << endl;
@@ -52,7 +54,8 @@ int main()
 		cout << "-";
 	}
 	cout << endl;
-	for (int i = z.number.size() - 1; i >= 0; i--) {
+	cout << "Answer" << endl;
+	for (int i = 0; i < z.number.size(); i++) {
 		cout << z.number[i];
 	}
 	cout << endl;
