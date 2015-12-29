@@ -1,2 +1,0 @@
-1000 Digits performed with 6.879 Seconds
-10000 Digits performed with 102.655 Seconds
